@@ -1,0 +1,44 @@
+quarkus:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    db-kind: postgresql
+    jdbc:
+      url: jdbc:postgresql://${DB_HOST}/${DATABASE_NAME}
+
+  scheduler:
+    thread-pool:
+      max-threads: ${APPLICATION_NUMBER_OF_THREADS:3}
+
+  thread-pool:
+    max-threads: ${APPLICATION_NUMBER_OF_THREADS:3}
+
+  transaction-manager:
+    default-transaction-timeout: ${APPLICATION_DEFAULT_TRANSACTION_TIMEOUT:60s}
+
+  log:
+    console:
+      format: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%t] outboxId=%X{outboxId} event=%X{event} transport=%X{transport} %c{3.} - %m%n"
+
+  flyway:
+    table: schema_history_${project.artifactId}
+
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USER}
+  password: ${RABBITMQ_PASS}
+  reconnect-attempts: 3
+
+application:
+  number_of_threads: ${APPLICATION_NUMBER_OF_THREADS:3}
+  event_name: ${APPLICATION_EVENT_NAME:events-producer}
+  number_thread_interation: ${APPLICATION_NUMBER_THREAD_ITERATION:3}
+  batch_size: ${APPLICATION_BATCH_SIZE:10}
+  http_sender_timeout: ${APPLICATION_HTTP_SENDER_TIMEOUT:50}
+  claim_lease_minutes: ${APPLICATION_CLAIM_LEASE_MINUTES:5}
+
+java:
+  util:
+    logging:
+      manager: org.jboss.logmanager.LogManager

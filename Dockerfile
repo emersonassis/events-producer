@@ -1,0 +1,31 @@
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in native (no JVM) mode.
+# It uses a micro base image, tuned for Quarkus native executables.
+# It reduces the size of the resulting container image.
+# Check https://quarkus.io/guides/quarkus-runtime-base-image for further information about this image.
+#
+# Before building the container image run:
+#
+# ./mvnw package -Dnative
+#
+# Then, build the image with:
+#
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/events-producer .
+#
+# Then run the container using:
+#
+# docker run -i --rm -p 8080:8080 quarkus/events-producer
+#
+###
+FROM maven:latest AS builder
+WORKDIR /work/
+COPY src/ /work
+COPY pom.xml /work
+RUN mvn package -Pnative -Dquarkus.native.container-build=true -DskipTests
+
+FROM quay.io/quarkus/quarkus-micro-image:2.0
+WORKDIR /work/
+COPY --from=builder /work/target/*-runner /work/application
+EXPOSE 8080
+
+ENTRYPOINT ["./application", "-Dquarkus.http.host=0.0.0.0"]
